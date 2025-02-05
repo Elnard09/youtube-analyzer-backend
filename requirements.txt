@@ -1,5 +1,6 @@
-flask
+Flask
 youtube-transcript-api
 transformers
 python-docx
 pdfkit
+torch
