@@ -10,7 +10,11 @@ app = Flask(__name__)
 # Initialize summarization pipeline
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe')  # Update path if neededpython app.py
+if os.name == 'nt':  # Windows
+    pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe')
+else:
+    pdfkit_config = None  # Use system wkhtmltopdf on Linux
+
 
 @app.route('/extract-transcript', methods=['GET'])
 def extract_transcript():
@@ -59,7 +63,7 @@ def generate_downloadable_file():
             return send_file('output.docx', as_attachment=True)
         
         elif file_format == 'pdf':
-            pdfkit.from_string(content, 'output.pdf')
+            pdfkit.from_string(content, 'output.pdf', configuration=pdfkit_config)
             return send_file('output.pdf', as_attachment=True)
         
         elif file_format == 'txt':
@@ -73,4 +77,6 @@ def generate_downloadable_file():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
