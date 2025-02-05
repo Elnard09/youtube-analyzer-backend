@@ -3,4 +3,5 @@ youtube-transcript-api
 transformers
 python-docx
 pdfkit
+gunicorn==20.1.0
 torch
